@@ -30,4 +30,15 @@ class CObjet():
         categorie = VAR.terrain[self.animation.x][self.animation.y].categorie
         if categorie != ENUM_OBJET.AUCUN:
             if categorie == ENUM_OBJET.FLAMME:
-            
+                perso.puissanceBombe +=1
+            elif categorie == ENUM_OBJET.ROLLER:
+                perso.vitesse += 5
+            elif categorie == ENUM_OBJET.BOMBE:
+                perso.nbBombes +=1
+            elif categorie == ENUM_OBJET.COUP_PIED:
+                perso.coupPied = True
+            elif categorie == ENUM_OBJET.COUP_POING:
+                perso.coupPoint = True
+
+            perso.listeObjets.append(categorie)
+            VAR.terrain[self.animation.x][self.animation.y].categorie = ENUM_OBJET.AUCUN

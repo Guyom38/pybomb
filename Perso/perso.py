@@ -8,7 +8,7 @@ import variables as VAR
 from variables import *
 
 import fonctions as FCT
-import random
+import random, math
 
 class CPerso():
     def __init__(self, id, controle):
@@ -36,7 +36,8 @@ class CPerso():
         
         self.distance = 0
         self.distancePas = 0
-        
+        self.ancienAjustement = -1
+
         self.nouveau()
         
     def peutPoserBombe(self):
@@ -73,7 +74,7 @@ class CPerso():
                 
                 colision = False
                 if VAR.terrain.enDehors_Terrain(self.animation.x, self.animation.y): colision = True
-                if VAR.terrain.colision_Decors(self.animation.x, self.animation.y): colision = True
+                if VAR.terrain.collision_Decors(self.animation.x, self.animation.y): colision = True
                 if VAR.terrain.zone[self.animation.x][self.animation.y].traversable: colision = True
                 
                 if not colision:
@@ -81,7 +82,7 @@ class CPerso():
             
             self.creation_zone_libre()
             
-    def position_joueur(self):
+    def positionne_joueur(self):
         if self.id == 0:
             self.animation.x, self.animation.y = 1, 1
         elif self.id == 1:
@@ -92,6 +93,8 @@ class CPerso():
             self.animation.x, self.animation.y = 1, VAR.dimensionY -1
         elif self.id == 4:
             self.animation.x, self.animation.y = VAR.dimensionX -1, 1
+
+
             
     def creation_zone_libre(self):
         for x in range (-2, 2):
@@ -196,7 +199,182 @@ class CPerso():
         
         self.ajsute_trajectoire(collision, ancX, ancY, 0.05)
         
-        ifBombe = 
+        idBombe = VAR.Bombes.il_Y_a_Til_Collision(self.animation.x, self.animation.y)
+        if idBombe > -1 and not VAR.bombes.il_Y_a_Til_Collision(ancX, ancY) > -1:
+            if self.coupDePied:
+                VAR.bombes.bombes[idBombe].deplacementEnCours = True
+                VAR.bombes.bombes[idBombe].direction = self.animation.direction
+            collision = True
+
+        persoConflit = self.collision_Autre_Personnage()
+        if persoConflit > -1 and self.coupDePoing:
+            if VAR.personnages[persoConflit].direction == ENUM_DIRECTION.BAS:
+                VAR.personnages[persoConflit].animation.y += self.pas
+            elif VAR.personnages[persoConflit].direction == ENUM_DIRECTION.GAUCHE:
+                VAR.personnages[persoConflit].animation.x -= self.pas
+            elif VAR.personnages[persoConflit].direction == ENUM_DIRECTION.DROITE:
+                VAR.personnages[persoConflit].animation.x += self.pas
+            elif VAR.personnages[persoConflit].direction == ENUM_DIRECTION.HAUT:
+                VAR.personnages[persoConflit].animation.y -= self.pas
+            collision = True
+
+        if collision:
+            if self.controlePar == ENUM_CONTROLEPAR.JOUEUR:
+                self.animation.x = ancX
+                self.animation.y = ancY
+            elif self.controlePar == ENUM_CONTROLEPAR.ORDINATEUR:
+                self.animation.x = int(ancX)
+                self.animation.y = int(ancY)
+
+                self.changer_Direction()
+
+    def poser_bombe(self):
+        VAR.bombes.poser(self, self.animation.x, self.animation.y)
+
+    def ordinateur_pose_aleatoirement(self):
+        if self.controlePar == ENUM_CONTROLEPAR.ORDINATEUR:
+            if random.randint(0, 100) < 5:
+                self.poser_Bombe()
+
+    def changer_direction(self):
+        notStop = True
+        while notStop:
+            
+            newDirection = random.choice((ENUM_DIRECTION.BAS, ENUM_DIRECTION.GAUCHE, ENUM_DIRECTION.DROITE, ENUM_DIRECTION.HAUT))
+            if newDirection == self.animation.direction:
+                self.animation.direction = newDirection
+                notStop = False
+    
+    def afficher(self):
+        if not self.animation.etat: return 0
+        self.seDeplace()
+
+        posX = int(VAR.offSetX + (self.animation.x * VAR.pas) + 2)
+        posY = int(VAR.offSetY + (self.animation.y * VAR.pas) - 16)
+        VAR.fenetre.blit(VAR.IMG[self.modele + self.animation.sprite], (posX, posY))
+
+    def ajuste_trajectoire(self, collision, ancX, ancY, pas):
+        oldAjustement = self.ancienAjustement
+
+        if collision:
+            tX = int(self.animation.x)
+            tY = int(self.animation.y)
+
+            leQuel = []
+            sens = 0
+            calcul = 0
+            base_ANIMATION = 0
+            base_ANC = 0
+            coeff = 0
+
+            #' //
+            #' // ---> Tester Direction
+            if self.animation.direction == ENUM_DIRECTION.BAS:
+                base_ANIMATION = self.animation.x 
+                coeff = +1 
+                base_ANC = ancX
+            elif self.animation.direction == ENUM_DIRECTION.HAUT:    
+                base_ANIMATION = self.animation.x 
+                coeff = -1 
+                base_ANC = _ancX
+            elif self.animation.direction == ENUM_DIRECTION.DROITE:    
+                base_ANIMATION = self.animation.y 
+                coeff = +1 
+                base_ANC = ancY
+            elif self.animation.direction == ENUM_DIRECTION.GAUCHE:    
+                base_ANIMATION = self.animation.y 
+                coeff = -1 
+                base_ANC = ancY
+
+            calcul = math.round(base_ANIMATION - int(base_ANIMATION), 2)
+
+            #' //
+            #' // ---> Ou sont les passages ?
+            for no in range(-1, 1):
+                noX = tX
+                noY = tY
+
+                if base_ANIMATION == self.animation.x:
+                     noX += no 
+                     noY += coeff 
+                else:
+                    noX += coeff
+                    noY += no
+
+                if not VAR._terrain.enDehors_Terrain(noX, noY) :
+                    if VAR.terrain.zone(noX, noY).traversable :
+                        self.leQuel.append(no)
+
+            
+
+            if len(self.leQuel) == 0: return 0
+
+            #' //
+            #' // ---> Calcul la direction du mouvement
+            if len(self.leQuel) == 1 :
+                if self.leQuel[0] == -1:
+                    if calcul >= 0.5 and calcul <= 0.8 and int(base_ANC) < int(base_ANC):
+                        sens = -1 
+                        ancienAjustement = 6
+                elif self.leQuel[0] == 0:
+                        if calcul >= 0.1 and calcul <= 1 and int(base_ANC) == int(base_ANC):
+                            sens = -1 
+                            ancienAjustement = 1
+                        if calcul >= 0.5 and calcul <= 1 and int(base_ANC) < int(base_ANC):
+                            sens = 1 
+                            ancienAjustement = 2
+                elif self.leQuel[0] == 1:
+                        if calcul >= 0.1 and calcul <= 0.5 and int(base_ANC) == int(base_ANC):
+                            sens = 1
+                            ancienAjustement = 7
+
+            elif len(self.leQuel) == 2 :
+                if self.leQuel(0) == -1 and self.leQuel(1) == 1:
+                    if calcul >= 0.1 and calcul <= 0.5 and int(base_ANC) == int(base_ANC):
+                        sens = 1
+                        ancienAjustement = 3
+                    if calcul >= 0.4 and calcul <= 0.9 and int(base_ANC) < int(base_ANC):
+                        sens = -1 
+                        ancienAjustement = 4
+
+
+            #' //
+            #' // ---> Fait glisser le joueur
+            if base_ANIMATION == self.animation.x:
+                if sens == -1:
+                    if not VAR.terrain.collision_Decors(self.animation.x - pas - pas, ancY, Id = 0):
+                        ancX = self.animation.x - pas - pas
+                elif sens == 1: 
+                    if not VAR.terrain.collision_Decors(self.animation.x + pas + pas, ancY, Id = 0):
+                        _ancX = self.animation.x + pas + pas
+            else:
+                if sens == -1: 
+                    if not VAR.terrain.collision_Decors(_ancX, self.animation.y - pas - pas, Id = 0):
+                        ancY = self.animation.y - pas - pas
+                elif sens == 1:  
+                    if not VAR.terrain.collision_Decors(_ancX, self.animation.y + pas + pas, Id = 0):
+                        ancY = self.animation.Y + pas + pas
+
+            liste = ""
+            for el in self.leQuel:
+                if not liste == "": liste += ","
+                liste += el
+
+            print("Xint:" + str(int(_ancX)) + "- XCint:" + str(int(_ancX)) + " - CALCUL: " & str(math.round(calcul, 2)) + " - BLOCS: " + liste + " - CAS: " + str(ancienAjustement) + " (av: " + str(oldAjustement) + ")")
+
+    def collision_autre_personnage(self):
+        pas = VAR.pas
+        for perso in VAR.personnages:
+            if not perso.id == self.id:
+
+                if FCT.collision(int(self.animation.x * pas), int(self.animation.y * pas), pas, pas, int(perso.animation.x * pas), int(perso.animation.y * pas), pas, pas):
+                    return perso.id
+                #'      If CInt(_perso._ANIMATION.X) = CInt(_ANIMATION.X) And CInt(_perso._ANIMATION.Y) = CInt(_ANIMATION.Y) Then Return _perso.Id
+
+
+        return -1
+
+    
             
                 
             

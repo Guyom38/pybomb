@@ -24,35 +24,35 @@ class CAnimation():
         self.direction = ENUM_DIRECTION.BAS
         
         if choix == ENUM_CHOIX.PERSO:
-            self.Actions["MARCHER"] = CActions (0, 3, True, False, 0.1)
-            self.Actions["ARRETER"] = CActions ( 0, 1, False, False, 0.1)
-            self.Actions["MOURRIR"] = CActions ( 30, 4, False, True, 0.3)
+            self.actions["MARCHER"] = CActions (0, 3, True, False, 0.1)
+            self.actions["ARRETER"] = CActions ( 0, 1, False, False, 0.1)
+            self.actions["MOURRIR"] = CActions ( 30, 4, False, True, 0.3)
         if choix == ENUM_CHOIX.BOMBE:
-            self.Actions["POSER"] = CActions ( 845, 3, False, False, 0.1)
-            self.Actions["EXPLOSION8"] = CActions ( 500, 4, False, True, 0.3)
-            self.Actions["EXPLOSION6"] = CActions ( 508, 4, False, True, 0.3)
-            self.Actions["EXPLOSION4"] = CActions ( 516, 4, False, True, 0.3)
-            self.Actions["EXPLOSION2"] = CActions ( 524, 4, False, True, 0.3)
-            self.Actions["EXPLOSION28"] = CActions ( 532, 4, False, True, 0.3)
-            self.Actions["EXPLOSION46"] = CActions ( 540, 4, False, True, 0.3)
-            self.Actions["EXPLOSION5"] = CActions ( 548, 4, False, True, 0.3)
+            self.actions["POSER"] = CActions ( 845, 3, False, False, 0.1)
+            self.actions["EXPLOSION8"] = CActions ( 500, 4, False, True, 0.3)
+            self.actions["EXPLOSION6"] = CActions ( 508, 4, False, True, 0.3)
+            self.actions["EXPLOSION4"] = CActions ( 516, 4, False, True, 0.3)
+            self.actions["EXPLOSION2"] = CActions ( 524, 4, False, True, 0.3)
+            self.actions["EXPLOSION28"] = CActions ( 532, 4, False, True, 0.3)
+            self.actions["EXPLOSION46"] = CActions ( 540, 4, False, True, 0.3)
+            self.actions["EXPLOSION5"] = CActions ( 548, 4, False, True, 0.3)
         if choix == ENUM_CHOIX.OBJET:
             vitesseObjet = 0.1
-            self.Actions[ENUM_OBJET.COUP_PIED] = CActions ( 700, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.COUP_POING] = CActions ( 703, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.BOMBE] = CActions ( 706, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.COEUR] = CActions ( 709, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.FLAMME] = CActions ( 712, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.GANT] = CActions ( 715, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.TATANE] = CActions ( 718, 3,  True, False, vitesseObjet)
-            self.Actions[ENUM_OBJET.ROLLER] = CActions ( 721, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.COUP_PIED] = CActions ( 700, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.COUP_POING] = CActions ( 703, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.BOMBE] = CActions ( 706, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.COEUR] = CActions ( 709, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.FLAMME] = CActions ( 712, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.GANT] = CActions ( 715, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.TATANE] = CActions ( 718, 3,  True, False, vitesseObjet)
+            self.actions[ENUM_OBJET.ROLLER] = CActions ( 721, 3,  True, False, vitesseObjet)
             
         if choix == ENUM_CHOIX.SURFACE:
-            self.Actions["SOL1"] = CActions ( 606, 1,  False, False, 50)
-            self.Actions["SOL2"] = CActions ( 607, 1,  False, False, 50)
-            self.Actions["SOLIDE"] = CActions ( 612, 1,  False, False, 50)
-            self.Actions["BRICK"] = CActions ( 600, 1,  False, False, 50)
-            self.Actions["EXPLOSION"] = CActions ( 601, 5,  False, True, 0.1) 
+            self.actions["SOL1"] = CActions ( 606, 1,  False, False, 50)
+            self.actions["SOL2"] = CActions ( 607, 1,  False, False, 50)
+            self.actions["SOLIDE"] = CActions ( 612, 1,  False, False, 50)
+            self.actions["BRICK"] = CActions ( 600, 1,  False, False, 50)
+            self.actions["EXPLOSION"] = CActions ( 601, 5,  False, True, 0.1) 
             
     def Get_action(self):
         return self.action

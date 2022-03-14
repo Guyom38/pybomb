@@ -1,29 +1,29 @@
-import enum
+from enum import Enum
 
-class ENUM_CONTROLEPAR(enum):
+class ENUM_CONTROLEPAR(Enum):
     JOUEUR = 0
     JOUEUR_INTERNET = 1
     ORDINATEUR = 2
     
-class ENUM_DIRECTION(enum):
+class ENUM_DIRECTION(Enum):
     HAUT = 0
     BAS = 1
     GAUCHE = 2
     DROITE = 3
 
-class ENUM_TYPE(enum):
+class ENUM_TYPE(Enum):
     BRICK_CASSEE = -1
     AUCUN = 0
     MUR = 1
     BRICK = 2
     
-class ENUM_CHOIX(enum):
+class ENUM_CHOIX(Enum):
     PERSO = 0
     BOMBE = 1
     OBJET = 2
     SURFACE = 3
     
-class ENUM_OBJET(enum):
+class ENUM_OBJET(Enum):
     AUCUN = 0
     FLAMME = 1
     ROLLER = 2
@@ -38,6 +38,8 @@ class ENUM_OBJET(enum):
     MALADIE_INVERSEE = 10
 
 terrain = None
+bombes = None
+personnages = None
 
 fenetre = None
 clock = None

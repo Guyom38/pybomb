@@ -4,6 +4,7 @@ from pygame.locals import *
 
 import variables as VAR
 from variables import *
+
 from Animation.animation import *
 
 import fonctions as FCT
@@ -142,6 +143,46 @@ class CBombe():
                 
                 return True
             else:
-                if self.explosion > 0
-                VAR.bombes
+                if self.explosion > 0:
+                    VAR.bombes[idBombe].delais = self.delais
+                    VAR.bombes[idBombe].exploision = self.explosion
+        
+        idPerso = self.collision_Personnage(x, y)
+        if idPerso == -1:
+            if not self.deplacementEnCours:
+                VAR.personnages(idPerso).detruire()
+            else:
+                self.deplacementEnCours = False
+                self.animation.x = int(self.animation.x)
+                self.animation.y = int(self.animation.y)
+
+        if self.collision_Objets(x, y) and self.blocDetruit[d] == 0:
+            if not self.deplacementEnCours:
+                VAR.terrain.zone[int(x)][int(y)].objet.categorie == ENUM_OBJET.AUCUN
+            return True
+
+        return False
+
+    def collision_Objets(self, x, y):
+        if not VAR.terrain.zone[int(x)][int(y)].objet.categorie == ENUM_OBJET.AUCUN:
+            return True
+        return False
+
+    def collision_Entre_Nous(self, x, y):
+        for n in range(0, len(VAR.bombes.bombes)):
+            if not n == id:
+                if not VAR.bombes.bombes[n] == None:
+                    if VAR.bombes.bombes[n].animation.etat:
+                        if int(VAR.bombes.bombes[n].animation.x) == int(x) and int(VAR.bombes.bombes[n].animation.y) == int(y):
+                            return n
+        return -1
+
+    def collision_Personnage(self, x, y):
+        for perso in VAR.personnages:
+            if perso.animation.etat:
+                if int(perso.animation.x) == int(x) and int(perso.animation.y) == int(y):
+                    return perso.id
+        return -1
+    
+
                 
