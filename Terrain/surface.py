@@ -18,18 +18,17 @@ class CSurface():
         self.objet = objet
         
     def traversable(self):
-        return (self.obstacle == ENUM_TYPE.AUCUN or self.obstacle == ENUM_TYPE.BRICK_CASSEE)
-    
-    def get_obstacle(self):
-        return self.obstacle
+        if self.obstacle == ENUM_TYPE.AUCUN : return True
+        if self.obstacle == ENUM_TYPE.BRICK_CASSEE: return True
+        return False
     
     def set_obstacle(self, valeur):
         if valeur == ENUM_TYPE.AUCUN:
-            self.animation.action = FCT.iif(self.animation.x % 2 == 0 or self.animation.y % 2 == 0, "SOL1", "SOL2")
+            self.animation.set_action(FCT.iif(self.animation.x % 2 == 0 or self.animation.y % 2 == 0, "SOL1", "SOL2"))
         elif valeur == ENUM_TYPE.BRICK:
-            self.animation.action = "BRICK"
+            self.animation.set_action("BRICK")
         elif valeur == ENUM_TYPE.MUR:
-            self.animation.action = "SOLIDE"
+            self.animation.set_action("SOLIDE")
             
     def afficher(self, coucheHaute):
         if coucheHaute and self.obstacle == ENUM_TYPE.AUCUN: return 0
@@ -38,5 +37,5 @@ class CSurface():
         pX = int(VAR.offSetX + (self.animation.x * VAR.pas))
         pY = int(VAR.offSetY + (self.animation.y * VAR.pas))
         
-        VAR.fenetre.blit(VAR.IMG[self.animation.sprite], pX, pY)
+        VAR.fenetre.blit(VAR.IMG[self.animation.sprite()], (pX, pY))
                  

@@ -69,15 +69,20 @@ class CPerso():
             
             notStop = True
             while notStop:
-                self.animation.x = random.randint(0, VAR.dimensionX)
-                self.animation.y = random.randint(0, VAR.dimensionY)
                 
-                colision = False
-                if VAR.terrain.enDehors_Terrain(self.animation.x, self.animation.y): colision = True
-                if VAR.terrain.collision_Decors(self.animation.x, self.animation.y): colision = True
-                if VAR.terrain.zone[self.animation.x][self.animation.y].traversable: colision = True
+                self.animation.x = random.randint(0, VAR.dimensionX-1)
+                self.animation.y = random.randint(0, VAR.dimensionY-1)
+                print("Boucle nouveau " + str(self.animation.x) + ", "+str(self.animation.y))
+                print("  -- En dehors = " + str(VAR.terrain.en_dehors_terrain(self.animation.x, self.animation.y)))
+                print("  -- Collision = " + str(VAR.terrain.collision_decors(self.animation.x, self.animation.y)))
+                print("  -- Zone = " + str(VAR.terrain.zone[self.animation.x][self.animation.y].traversable()))
+
+                collision = False
+                if VAR.terrain.en_dehors_terrain(self.animation.x, self.animation.y): collision = True
+                if VAR.terrain.collision_decors(self.animation.x, self.animation.y): collision = True
+                if VAR.terrain.zone[self.animation.x][self.animation.y].traversable(): collision = True
                 
-                if not colision:
+                if not collision:
                     notStop = False
             
             self.creation_zone_libre()
@@ -97,23 +102,23 @@ class CPerso():
 
             
     def creation_zone_libre(self):
-        for x in range (-2, 2):
-            for y in range (-2, 2):
-                if VAR.terrain.enDehors_Terrain(self.animation.x, self.animation.y):
+        for x in range (-2, 2 +1):
+            for y in range (-2, 2 +1):
+                if VAR.terrain.en_dehors_terrain(self.animation.x, self.animation.y):
                     if VAR.terrain.zone[self.animation.x + x][self.animation.y + y].obstacle == ENUM_TYPE.BRICK:
-                        VAR.terrain.zone[self.animation.x + x][self.animation.y + y].obstacle = ENUM_TYPE.AUCUN
+                        VAR.terrain.zone[self.animation.x + x][self.animation.y + y].set_obstacle(ENUM_TYPE.AUCUN)
                         VAR.terrain.zone[self.animation.x + x][self.animation.y + y].categorie = ENUM_OBJET.AUCUN 
                         
     def detruire(self):
         if self.animation.action == "MOURRIR": return 0
-        self.animation.action = "MOURRIR"
+        self.animation.set_action("MOURRIR")
         self.animation.etat = True
         
         for objet_ramasse in self.listeObjets:
             notStop = True
             while notStop:
-                objX = random.randint(0, VAR.dimensionX)
-                objY = random.randint(0, VAR.dimensionY)
+                objX = random.randint(0, VAR.dimensionX-1)
+                objY = random.randint(0, VAR.dimensionY-1)
                 
                 collision = False
                 if VAR.terrain.collision_Decors(objX, objY): collision = True
@@ -153,9 +158,9 @@ class CPerso():
                     bouge = True
             
             if not bouge:
-                self.animation.action = "ARRETER"
+                self.animation.set_action("ARRETER")
             else:
-                self.aniamtion.action = "MARCHER"
+                self.animation.set_action("MARCHER")
                 self.gestion_collision(ancX, ancY, pas)
                 
                 VAR.terrain.zone[int(self.animation.x)][int(self.animation.y)].objet.ramasser()
@@ -195,18 +200,18 @@ class CPerso():
     def gestion_collision(self, ancX, ancY, pas):
         collision = False
         
-        if VAR.terrain.collision_Decors(self.animation.x, self.animation.y, id = 0): collision = True
+        if VAR.terrain.collision_decors(self.animation.x, self.animation.y, id = 0): collision = True
         
-        self.ajsute_trajectoire(collision, ancX, ancY, 0.05)
+        self.ajuste_trajectoire(collision, ancX, ancY, 0.05)
         
-        idBombe = VAR.Bombes.il_Y_a_Til_Collision(self.animation.x, self.animation.y)
+        idBombe = VAR.bombes.il_y_a_til_collision(self.animation.x, self.animation.y)
         if idBombe > -1 and not VAR.bombes.il_Y_a_Til_Collision(ancX, ancY) > -1:
             if self.coupDePied:
                 VAR.bombes.bombes[idBombe].deplacementEnCours = True
                 VAR.bombes.bombes[idBombe].direction = self.animation.direction
             collision = True
 
-        persoConflit = self.collision_Autre_Personnage()
+        persoConflit = self.collision_autre_personnage()
         if persoConflit > -1 and self.coupDePoing:
             if VAR.personnages[persoConflit].direction == ENUM_DIRECTION.BAS:
                 VAR.personnages[persoConflit].animation.y += self.pas
@@ -226,7 +231,7 @@ class CPerso():
                 self.animation.x = int(ancX)
                 self.animation.y = int(ancY)
 
-                self.changer_Direction()
+                self.changer_direction()
 
     def poser_bombe(self):
         VAR.bombes.poser(self, self.animation.x, self.animation.y)
@@ -251,7 +256,7 @@ class CPerso():
 
         posX = int(VAR.offSetX + (self.animation.x * VAR.pas) + 2)
         posY = int(VAR.offSetY + (self.animation.y * VAR.pas) - 16)
-        VAR.fenetre.blit(VAR.IMG[self.modele + self.animation.sprite], (posX, posY))
+        VAR.fenetre.blit(VAR.IMG[self.modele + self.animation.sprite()], (posX, posY))
 
     def ajuste_trajectoire(self, collision, ancX, ancY, pas):
         oldAjustement = self.ancienAjustement
@@ -302,7 +307,7 @@ class CPerso():
                     noY += no
 
                 if not VAR._terrain.enDehors_Terrain(noX, noY) :
-                    if VAR.terrain.zone(noX, noY).traversable :
+                    if VAR.terrain.zone(noX, noY).traversable() :
                         self.leQuel.append(no)
 
             

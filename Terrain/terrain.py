@@ -40,11 +40,9 @@ class CTerrain():
         
         if not vide:
             obj = 0
-            self.zone[0][1]="OO"
+
             for y in range(0, VAR.dimensionY):
-                print (y)
                 for x in range(0, VAR.dimensionX):
-                    print("  " + str(x))
                     obstacle = ENUM_TYPE.AUCUN
                     objet = ENUM_OBJET.AUCUN
                     
@@ -57,32 +55,32 @@ class CTerrain():
                             obstacle = ENUM_TYPE.MUR
                             
                             if random.randint(0, 100) < self.reglageObjets:
-                                objet = random.choices((ENUM_OBJET.BOMBE, ENUM_OBJET.FLAMME, ENUM_OBJET.ROLLER))
+                                objet = random.choice((ENUM_OBJET.BOMBE, ENUM_OBJET.FLAMME, ENUM_OBJET.ROLLER))
                                 obj +=1
                     
                     self.zone[x][y] = CSurface(x, y, obstacle, CObjet(obj, x, y, objet))
     
-    def afficher_couche_Haute(self):
+    def afficher_couche_haute(self):
         for y in range(0, VAR.dimensionY):
             for x in range(0, VAR.dimensionX):
                 self.zone[x][y].afficher(True)
 
-                if not self.zone[x][y].animation.etat and (self.zone[x][y].obstacle == ENUM_TYPE.BRICK_CASSEE or self.zone[x][y].traversable):
+                if not self.zone[x][y].animation.etat and (self.zone[x][y].obstacle == ENUM_TYPE.BRICK_CASSEE or self.zone[x][y].traversable()):
                     self.zone[x][y].objet.afficher()
 
-    def afficher_couche_Basse(self):        
-        for y2 in range(0, VAR.dimensionY):
-            for x2 in range(0, VAR.dimensionX):
+    def afficher_couche_basse(self):        
+        for y2 in range(VAR.dimensionY):
+            for x2 in range(VAR.dimensionX):
                 x = VAR.offSetX + (x2 * VAR.pas)
                 y = VAR.offSetY + (y2 * VAR.pas)
 
-                if self.zone(x2, y2).traversable:
+                if self.zone[x2][y2].traversable():
                     if x2 % 2 == 0 or y2 % 2 == 0:
-                        VAR.fenetre.blit(VAR.IMG[606], x, y)
+                        VAR.fenetre.blit(VAR.IMG[606], (x, y))
                     else:
-                        VAR.fenetre.blit(VAR.IMG[607], x, y)
+                        VAR.fenetre.blit(VAR.IMG[607], (x, y))
 
-    def collision_Decors(self, x, y, graph = False):
+    def collision_decors(self, x, y, graph = False):
         pas = VAR.pas
 
         tX = int(x)
@@ -91,17 +89,18 @@ class CTerrain():
         for nY in range (tY-1, tY+1):
             for nX in range (tX -1, tX +1):
                 if not (nX == tX and nY == tY):
-                    if not self.enDehors_Terrain(nX, nY):
-                        if not self.zone[nX][nY].traversable:
-                            if FCT.Collision(nX * pas, nY * pas, pas, pas, int(x * pas) +8, int(y*pas)+8, pas - 16, pas - 16): 
+                    if not self.en_dehors_terrain(nX, nY):
+                        if not self.zone[nX][nY].traversable():
+                            if FCT.collision(nX * pas, nY * pas, pas, pas, int(x * pas) +8, int(y*pas)+8, pas - 16, pas - 16): 
                                 return True
-
-    def enDehors_Terrain(self, x, y):
+        return False
+    
+    def en_dehors_terrain(self, x, y):
         if x < 0 or x > VAR.dimensionX: return True
         if y < 0 or y > VAR.dimensionY: return True
         return False
 
-    def destruction_Timing(self):
+    def destruction_timing(self):
         if pygame.time.get_ticks() - self.cycle > self.frequence:
             if self.pX == -1:
                 self.maxX = VAR.dimensionX -1
@@ -116,32 +115,32 @@ class CTerrain():
 
             if pygame.time.get_ticks() - self.cycleInterval > self.frequenceInterval:
                 self.cycleInterval = pygame.time.get_ticks()
-                self.zone[self.pX][self.pY].obstacle = ENUM_TYPE.MUR
+                self.zone[self.pX][self.pY].set_obstacle(ENUM_TYPE.MUR)
 
                 for perso in VAR.personnages:
                     if int(perso.animation.x) == self.pX and int(perso.animation.y) == self.pY:
-                        perso.animation.action = "MOURRIR"
+                        perso.animation.set_action("MOURRIR")
                         perso.animation.etat = True
 
-                if self.animation.direction == 0:
+                if self.direction == 0:
                     if self.pX < self.maxX:
                         self.pX +=1
                     else:
                         self.direction = 1
                         self.minX +=1
-                elif self.animation.direction == 1:
+                elif self.direction == 1:
                     if self.pY < self.maxY:
                         self.pY +=1
                     else:
                         self.direction = 2
                         self.minY +=1   
-                elif self.animation.direction == 2:
+                elif self.direction == 2:
                     if self.pX >= self.maxX:
                         self.pX -=1
                     else:
                         self.direction = 3
                         self.minX -=1         
-                elif self.animation.direction == 3:
+                elif self.direction == 3:
                     if self.pY >= self.maxY:
                         self.pY -1
                     else:

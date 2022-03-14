@@ -17,7 +17,7 @@ class CBombe():
         
         self.animation = CAnimation(ENUM_CHOIX.BOMBE)
         self.animation.etat = True
-        self.animation.action = "Poser"
+        self.animation.set_action("Poser")
         self.animation.x = x
         self.animation.y = y
         
@@ -35,7 +35,7 @@ class CBombe():
     def explosionForce(self):
         return self.persoPoseur.puissanceBombe
     
-    def seDeplacer(self):
+    def se_deplacer(self):
         if not self.deplacementEnCours: return 0
         
         pas = 0.2
@@ -60,7 +60,7 @@ class CBombe():
             self.animation.y = int(self.animation.y + retour[1])
             
     def afficher(self):
-        if VAR.terrain.zone[int(self.animation.x)][int(self.animation.y)].obstacle == ENUM_TYPE.MUR: self.explosion = self.explosionForce
+        if VAR.terrain.zone[int(self.animation.x)][int(self.animation.y)].obstacle == ENUM_TYPE.MUR: self.explosion = self.explosionForce()
         
         if self.explosion > 0:
             if self.deplacementEnCours:
@@ -72,11 +72,11 @@ class CBombe():
         else:
             tmpX = VAR.offSetX + (self.animation.x * VAR.pas) +4
             tmpY = VAR.offSetY + (self.animation.y * VAR.pas) -2
-            VAR.fenetre.blit(IMG[self.animation.sprite], (int(tmpX), int(tmpY)))
+            VAR.fenetre.blit(IMG[self.animation.sprite()], (int(tmpX), int(tmpY)))
     
     def afficher_explosion(self):
-        if VAR.terrain.zone[int(self.animation.x)][int(self.animation.y)].traversable:
-            self.controle.collision(0, int(self.animation.x), int(self.animation.y), (int(self.animation.x), int(self.animation.y)))
+        if VAR.terrain.zone[int(self.animation.x)][int(self.animation.y)].traversable():
+            self.controle_collision(0, int(self.animation.x), int(self.animation.y), (int(self.animation.x), int(self.animation.y)))
             self.dessiner(self.animation.x, self.animation.y, (int(self.animation.x), int(self.animation.y)))
             
         for n2 in range (1, self.explosion):
@@ -94,13 +94,13 @@ class CBombe():
                 elif d == ENUM_DIRECTION.DROITE:
                     x += n2
                     
-                if VAR.terrain.enDehors_Terrain(x, y):
-                    if VAR.terrain.zone[int(x)][int(y)].traversable: self.dessiner(x, y, (self.animation.x, self.animation.y))
+                if VAR.terrain.en_dehors_terrain(x, y):
+                    if VAR.terrain.zone[int(x)][int(y)].traversable(): self.dessiner(x, y, (self.animation.x, self.animation.y))
                     if self.controle_collision(d, x, y, (int(self.animation.x), int(self.animation.y))):
                         self.blocDirection[d] = n2
                         if VAR.terrain.zone[int(x)][int(y)].obstacle == ENUM_TYPE.BRICK:
-                            VAR.terrain.zone[int(x)][int(y)].obstacle = ENUM_TYPE.BRICK_CASSEE
-                            VAR.terrain.zone[int(x)][int(y)].animation.action = "EXPLOSION"
+                            VAR.terrain.zone[int(x)][int(y)].set_obstacle(ENUM_TYPE.BRICK_CASSEE)
+                            VAR.terrain.zone[int(x)][int(y)].animation.set_action("EXPLOSION")
                             VAR.terrain.zone[int(x)][int(y)].animation.etat = True
                             
                             self.blocDetruit[d] = 1
@@ -115,25 +115,25 @@ class CBombe():
             xx = (source[0] - int(x))
             yy = (source[1] - int(y))
  
-            if sprite == -1 and (xx == 0 and yy == 0): sprite = self.animation.sprite["EXPLOSION5"]
+            if sprite == -1 and (xx == 0 and yy == 0): sprite = self.animation.sprite("EXPLOSION5")
 
-            if sprite == -1 and (xx == 0 and (not yy == 0 and abs(yy) <= ff)) : sprite = self.animation.sprite["EXPLOSION28"]
-            if sprite == -1 and ((not xx == 0 and abs(xx) <= ff) and yy == 0) : sprite = self.animation.sprite["EXPLOSION46"]
+            if sprite == -1 and (xx == 0 and (not yy == 0 and abs(yy) <= ff)) : sprite = self.animation.sprite("EXPLOSION28")
+            if sprite == -1 and ((not xx == 0 and abs(xx) <= ff) and yy == 0) : sprite = self.animation.sprite("EXPLOSION46")
 
-            if sprite == -1 and ((xx <= 0 and abs(xx) == ff) and yy == 0) : sprite = self.animation.sprite["EXPLOSION6"]
-            if sprite == -1 and ((xx >= 0 and abs(xx) == ff) and yy == 0) : sprite = self.animation.sprite["EXPLOSION4"]
-            if sprite == -1 and (xx == 0 and (yy <= 0 and abs(yy) == ff)) : sprite = self.animation.sprite["EXPLOSION2"]
-            if sprite == -1 and (xx == 0 and (yy >= 0 and abs(yy) == ff)) : sprite = self.animation.sprite["EXPLOSION8"]
+            if sprite == -1 and ((xx <= 0 and abs(xx) == ff) and yy == 0) : sprite = self.animation.sprite("EXPLOSION6")
+            if sprite == -1 and ((xx >= 0 and abs(xx) == ff) and yy == 0) : sprite = self.animation.sprite("EXPLOSION4")
+            if sprite == -1 and (xx == 0 and (yy <= 0 and abs(yy) == ff)) : sprite = self.animation.sprite("EXPLOSION2")
+            if sprite == -1 and (xx == 0 and (yy >= 0 and abs(yy) == ff)) : sprite = self.animation.sprite("EXPLOSION8")
 
 
             if not sprite == -1:
                 tmpX = VAR.offSetX + (x * (VAR.pas)) + 2
                 tmpY = VAR.offSetY + (y * (VAR.pas)) + 2
-                VAR.fenetre.blit(VAR.IMG[sprite], int(tmpX), int(tmpY))
+                VAR.fenetre.blit(VAR.IMG[sprite], (int(tmpX), int(tmpY)))
        
                 
     def controle_collision(self, d, x, y, source):
-        if not VAR.terrain.zone[int(x)][int(y)].traversable: return False
+        if not VAR.terrain.zone[int(x)][int(y)].traversable(): return False
         idBombe = self.collision_entre_nous(x, y)
         if idBombe > -1:
             if self.deplacementEnCours:
@@ -147,7 +147,7 @@ class CBombe():
                     VAR.bombes[idBombe].delais = self.delais
                     VAR.bombes[idBombe].exploision = self.explosion
         
-        idPerso = self.collision_Personnage(x, y)
+        idPerso = self.collision_personnage(x, y)
         if idPerso == -1:
             if not self.deplacementEnCours:
                 VAR.personnages(idPerso).detruire()
@@ -156,19 +156,19 @@ class CBombe():
                 self.animation.x = int(self.animation.x)
                 self.animation.y = int(self.animation.y)
 
-        if self.collision_Objets(x, y) and self.blocDetruit[d] == 0:
+        if self.collision_objets(x, y) and self.blocDetruit[d] == 0:
             if not self.deplacementEnCours:
                 VAR.terrain.zone[int(x)][int(y)].objet.categorie == ENUM_OBJET.AUCUN
             return True
 
         return False
 
-    def collision_Objets(self, x, y):
+    def collision_objets(self, x, y):
         if not VAR.terrain.zone[int(x)][int(y)].objet.categorie == ENUM_OBJET.AUCUN:
             return True
         return False
 
-    def collision_Entre_Nous(self, x, y):
+    def collision_entre_nous(self, x, y):
         for n in range(0, len(VAR.bombes.bombes)):
             if not n == id:
                 if not VAR.bombes.bombes[n] == None:
@@ -177,7 +177,7 @@ class CBombe():
                             return n
         return -1
 
-    def collision_Personnage(self, x, y):
+    def collision_personnage(self, x, y):
         for perso in VAR.personnages:
             if perso.animation.etat:
                 if int(perso.animation.x) == int(x) and int(perso.animation.y) == int(y):

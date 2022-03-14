@@ -54,21 +54,18 @@ class CAnimation():
             self.actions["BRICK"] = CActions ( 600, 1,  False, False, 50)
             self.actions["EXPLOSION"] = CActions ( 601, 5,  False, True, 0.1) 
             
-    def Get_action(self):
-        return self.action
-    
-    def Set_action(self, valeur):
+    def set_action(self, valeur):
         if self.action != valeur: self.frame = 0
         self.action = valeur
-        if self.actions in (valeur):
+        if valeur in self.actions:
             self.maxFrame = self.actions[valeur].nbImages -1
             self.frequence = self.actions[valeur].vitesse
             
-    def Actualiser(self):
+    def actualiser(self):
         if pygame.time.get_ticks() - self.cycle > self.frequence:
             if self.frame >= self.maxFrame:
                 blocFrame = False
-                if self.actions in (self.action):
+                if self.action in self.actions:
                     if self.actions(self.action).stopAnimation: 
                         blocFrame = True
                         self.etat = False
@@ -78,16 +75,17 @@ class CAnimation():
                 
             self.cycle = pygame.time.get_ticks()
             
-    def Sprite(self, action = "", actuel = True):
-        if action != "": self.action = action
+    def sprite(self, act = "", actuel = True):
+        if act != "": self.set_action(act)
         
-        if self.actions in (action):
-            if actuel == True: self.Actualiser()
-            return self.actions(action).premiereImage + self.frame + int(FCT.iif(self.actions(action).toutesDirection, self.Retourne_Direction_OffSet_Image(self.direction), 0))
+        if self.action in self.actions:
+            if actuel == True: self.actualiser()
+            result = self.actions(self.action).premiereImage + self.frame + int(FCT.iif(self.actions(self.action).toutesDirection, self.retourne_direction_offset_image(self.direction), 0))
+            return result
 
         return 0
     
-    def Retourne_Direction_OffSet_Image(self, direction):
+    def retourne_direction_offset_image(self, direction):
         if direction == ENUM_DIRECTION.BAS: 
             return 0
         elif direction == ENUM_DIRECTION.GAUCHE:

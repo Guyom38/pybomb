@@ -19,8 +19,8 @@ def image_decoupe(img, x, y, dimx, dimy, dimxZ = -1, dimyZ = -1):
         tmp = pygame.transform.scale(tmp, (dimxZ, dimyZ))
     return tmp
 
-def GenereMat2D(xDim, yDim, valeurDefaut):
-    return [[valeurDefaut for x in range(yDim)] for i in range(xDim)]
+def GenereMat2D(dimX, dimY, valeurDefaut):
+    return [[valeurDefaut for x in range(dimY)] for i in range(dimX)]
 
 def Generer_SpritesTexte_A_Partir_Image(fichier, id, dimX, dimY):
     imageTmp = pygame.image.load(fichier).convert_alpha() 
@@ -38,6 +38,9 @@ def Generer_SpritesTexte_A_Partir_Image(fichier, id, dimX, dimY):
 def image_vide(dimX, dimY):
     return pygame.Surface((dimX, dimY),pygame.SRCALPHA,32)
 
-def Collision(x1, y1, dX1, dY1, x2, y2, dX2, dY2):
-        return not ((x2 >= x1 + dX1) or (x2 + dX2 <= x1) or (y2 >= y1 + dY1) or (y2 + dY2 <= y1))
+def collision(x1, y1, dX1, dY1, x2, y2, dX2, dY2):
+    if (x2 >= x1 + dX1) or (x2 + dX2 <= x1) or (y2 >= y1 + dY1) or (y2 + dY2 <= y1):
+        return False
+    else:
+        return True
         

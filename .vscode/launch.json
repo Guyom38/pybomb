@@ -8,7 +8,8 @@
             "name": "Python : Fichier actuel",
             "type": "python",
             "request": "launch",
-            "program": "c:\\Users\\009728\\Documents\\#PROJETS\\#PYTHON\\Pybomb\\bomberman.py",
+            //"program": "c:\\Users\\009728\\Documents\\#PROJETS\\#PYTHON\\Pybomb\\bomberman.py",
+            "program": "D:\\#PROJETS\\#PYTHON\\pybomb\\bomberman.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

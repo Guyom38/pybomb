@@ -24,7 +24,7 @@ class CObjet():
             pX = int(VAR.offSetX + (self.animation.x * VAR.pas))
             pY = int(VAR.offSetY + (self.animation.y * VAR.pas))
             
-            VAR.fenetre.blit(VAR.IMG[self.animation.sprite], pX, pY)
+            VAR.fenetre.blit(VAR.IMG[self.animation.sprite()], (pX, pY))
             
     def ramasser(self, perso):
         categorie = VAR.terrain[self.animation.x][self.animation.y].categorie

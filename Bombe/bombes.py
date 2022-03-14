@@ -12,16 +12,17 @@ from Bombe.bombe import *
 import fonctions as FCT
 
 class CBombes():
-    def __init__(self):
+    def __init__(self, maxBombes):
         print("CBombes")         
-        self.bombes = []
+        self.bombes = [None for b in range(maxBombes)]
+        
         self.cycle = 0
         self.delais = 50
 
     def nombreBombes(self):
         return len(self.bombes)
 
-    def Gestion_Explosion(self, n):
+    def gestion_explosion(self, n):
         
         if pygame.time.get_ticks() - VAR.bombes.bombes[n].delais > VAR.bombes.bombes[n].TempsAvantExplosion:
                 if pygame.time.get_ticks() - self.cycle > self.delais:
@@ -73,7 +74,7 @@ class CBombes():
 
 
 
-    def il_Y_a_Til_Collision(self, x, y):
+    def il_y_a_til_collision(self, x, y):
         for n in range(0, self.nombreBombes):
             if not self.bombes[n] == None:
                     if self.bombes[n].animation.etat:
